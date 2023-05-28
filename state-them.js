@@ -456,7 +456,7 @@ export class StateMachine{
     }
 
 
-    reactToMachine(stateMachine){
+    reactToStateChangeOf(machine){
 
     }
 
@@ -470,7 +470,7 @@ export class StateMachine{
                 }
 
                 const newStateHandler =(newState)=>{
-                    this.reactToMachine(sm);
+                    this.reactToStateChangeOf(sm);
                 };
 
                 this.#foundMachines[smName]={

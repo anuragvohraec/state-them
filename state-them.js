@@ -370,3 +370,230 @@ export function repeat(items,idFunction,templateFunction){
     });
     return result;
 }
+
+
+
+
+////////////////////////////////////////////////
+////////////////////////////////////////////////
+////////////////////////////////////////////////
+////////////////////////////////////////////////
+////////////////////////////////////////////////
+////////////////////////////////////////////////
+////////////////////////////////////////////////
+////////////////////////////////////////////////
+////////////////////////////////////////////////
+////////////////////////////////////////////////
+////////////////////////////////////////////////
+
+
+export class StateMachine{
+
+    static searchMachineFrom(machineName, startingElement){
+        let currentEl = startingElement;
+        while(currentEl){
+            if(currentEl instanceof StateMachineWidget){
+                if(currentEl.machineName === machineName && currentEl.machine){
+                    return currentEl.machine;
+                }else if(currentEl.hasMachine(machineName)){
+                    return currentEl.getHostedMachine(machineName);
+                }
+            }
+            let t= currentEl.parentNode;
+            if(t instanceof ShadowRoot){
+                t = t.host;
+            }
+            currentEl = t;
+        }
+    }
+
+    /**
+     * 
+     * @param {string} name : name of this state machine, used for subscription
+     * @param {string} initState: the initial state for this
+     * @param {any} model:
+     * 
+     */
+    constructor({name, model=undefined, initState=undefined,reactsTo=[]}){
+        super();
+        this.#name=name;
+        if(model){
+            this.#model=model;
+            this.#state=initState;
+        }
+        this.#listeners={};
+        this.#id=0;
+        this.#reactsTo=reactsTo;
+        this.#foundMachines={};
+    }
+
+
+    searchMachine(machineName){
+        return StateMachine.searchMachineFrom(machineName,this.hostElement);
+    }
+
+    get name(){
+        return this.#name;
+    }
+
+    get state(){
+        return this.#state;
+    }
+
+    _subscribe(newStateHandler){
+        let id = ++this.#id;
+        this.#listeners[id]=newStateHandler;
+        return id;
+    }
+
+    _unsubscribe(subscription_id){
+        delete this.#listeners[subscription_id];
+    }
+
+
+    reactToStateChangeFrom(smName,newState){
+
+    }
+
+    onConnection(hostElement){
+        this.#hostElement=hostElement;
+        if(this.#reactsTo.length>0){
+            for(let smName of reactsTo){
+                const sm = this.searchMachine(smName);
+                if(!sm){
+                    throw `[STATE-THEM]: Required state machine not found: [${smName}] , Required by: ${JSON.stringify({host:this.#hostElement.tagName, machine: this.#name})}`;
+                }
+
+                const newStateHandler =(newState)=>{
+                    this.reactToStateChangeFrom(smName,newState);
+                };
+
+                this.#foundMachines[smName]={
+                    machine: sm,
+                    subscription_id: sm._subscribe(newStateHandler)
+                };
+            }
+        }
+    }
+
+    onDisconnection(){
+        for(let smName in this.#foundMachines){
+            try{
+                let {machine, subscription_id}=this.#foundMachines[smName];
+                machine.#unsubscribe(subscription_id);
+            }catch(e){
+                console.error(e);
+            }
+        }
+    }
+
+    /**
+     * If return true than state is changed
+     */
+    act(actionName){
+        if(this[actionName]){
+            if(this[actionName]()){
+                //new state
+                this.#state = this.#model[this.#state][actionName];
+
+                //publish new state to all listeners
+                for(let id in this.#listeners){
+                    try{
+                        this.#listeners[id](this.#state);
+                    }catch(e){
+                        console.error(e);
+                    }
+                }
+            }
+        }
+    }
+
+
+}
+
+export class StateMachineWidget extends HTMLElement{
+    constructor({
+        machineName,
+        hostedMachines={},
+    }){
+        super();
+        this.#machineName=machineName;
+        this.#hostedMachines=hostedMachines;
+
+        if(this.hasAttribute("shadow")){
+            this.attachShadow({mode: "open"});
+            this.#root=this.shadowRoot;
+        }else{
+            this.#root=this;
+        }
+        
+    }
+
+    get machineName(){
+        return this.#machineName;
+    }
+
+    hasMachine(machineName){
+        if(!this.#hostedMachines){
+            return false;
+        }else{
+            if(this.#hostedMachines[machineName]){
+                return true;
+            }else{
+                return false;
+            }
+        }
+    }
+
+    getHostedMachine(machineName){
+        return this.#hostedMachines?.[machineName];
+    }
+
+    get machine(){
+        return this.#machine;
+    }
+
+    connectedCallback(){
+        for(let smName in this.#hostedMachines){
+            try{
+                this.#hostedMachines[smName].onConnection(this);
+            }catch(e){
+                console.error(e);
+            }
+        }
+
+        if(this.#machineName){
+            this.#machine=StateMachine.searchMachineFrom(this.#machineName,this);
+            if(!this.#machine){
+                throw `[STATE-THEM]: Required state machine not found: [${this.#machineName}] , Required by: ${JSON.stringify({host:this.tagName})}`;
+            }
+            try{
+                this.#subscription_id=this.#machine._subscribe(this.rebuild);
+            }catch(e){
+                console.error(e);
+            }
+        }
+    }
+
+    disconnectedCallback(){
+        if(this.#machine){
+            this.#machine._unsubscribe(this.#subscription_id);
+        }
+
+        for(let smName in this.#hostedMachines){
+            try{
+                this.#hostedMachines[smName].onDisconnection();
+            }catch(e){
+                console.error(e);
+            }
+        }
+    }
+
+    rebuild(newState){
+        if(!this.build){
+            throw `[STATE-THEM]: No build function found for ${this.tagName}`;
+        }
+        render(this.#root,this.build(newState));
+    }
+
+}

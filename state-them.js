@@ -497,18 +497,22 @@ export class StateMachine{
      */
     do(actionName){
         let nextState = this.#model?.[this.#state]?.[actionName];
-        if(!this[actionName]()){
-            //new state
-            this.#state = nextState;
+        if(this[actionName]){
+            if(!this[actionName]()){
+                //new state
+                this.#state = nextState;
 
-            //publish new state to all listeners
-            for(let id in this.#listeners){
-                try{
-                    this.#listeners[id](nextState);
-                }catch(e){
-                    console.error(e);
+                //publish new state to all listeners
+                for(let id in this.#listeners){
+                    try{
+                        this.#listeners[id](nextState);
+                    }catch(e){
+                        console.error(e);
+                    }
                 }
             }
+        }else{
+            throw `[STATE-THEM]: No such action: ${JSON.stringify({action:actionName, host:this.#hostElement.tagName, machine: this.#name})}`;
         }
     }
 

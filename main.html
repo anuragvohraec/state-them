@@ -11,6 +11,51 @@
     <script type="module">
         import {html,render,repeat, StateMachine, StateMachineWidget} from "./state-them.js";
 
+        class ColorChanger extends StateMachine{
+            constructor(){
+                super({
+                    name:"ColorChanger",
+                    model:{
+                        "black":{
+                            changeToRed:"red",
+                        },
+                        "red":{
+                            changeToBlack:"black"
+                        }
+                    },
+                    initState:"black"
+                });
+            }
+
+            onConnection(he){
+                super.onConnection(he);
+                setTimeout(()=>{
+                    this.do("changeToRed");
+                },3000);
+            }
+        }
+
+        class ColorChangerWidget extends StateMachineWidget{
+            constructor(){
+                super({
+                    machineName:"ColorChanger",
+                    hostedMachines:{
+                        ColorChanger: new ColorChanger()
+                    }
+                });
+            }
+
+            build(state){
+                let style="color:black";
+                if(state==="red"){
+                    style="color:red";
+                }
+                return html`<div style=${style}><slot></slot></div>`;
+            }
+        }
+        customElements.define("color-changer",ColorChangerWidget);
+
+
         class Counter extends StateMachine{
             constructor(){
                 super({
@@ -54,7 +99,9 @@
                         this.machine.do("decrement");
                     }}>decrement</button>
                     <br>
+                    <color-changer>
                     ${this.machine.count}
+                    </color-changer>
                     </div>`;
             }
         }

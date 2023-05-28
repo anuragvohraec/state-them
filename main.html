@@ -53,11 +53,7 @@
             }
 
             build(state){
-                let style="color:black";
-                if(state==="red"){
-                    style="color:red";
-                }
-                return html`<div style=${style}><slot></slot></div>`;
+                return html`<div style=${`color:${state}`}><slot></slot></div>`;
             }
         }
         customElements.define("color-changer",ColorChangerWidget);

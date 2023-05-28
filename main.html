@@ -11,6 +11,24 @@
     <script type="module">
         import {html,render,repeat, StateMachine, StateMachineWidget} from "./state-them.js";
 
+        class Incrementor extends StateMachine{
+            constructor(){
+                super({
+                    name:"Incrementor",
+                    model:{
+                        "init":{
+                            changeNow:"changed"
+                        }
+                    }
+                });
+                this.increment=1;
+            }
+
+            changeNow(){
+                this.increment=5;
+            }
+        }
+
         class ColorChanger extends StateMachine{
             constructor(){
                 super({
@@ -69,17 +87,25 @@
                             decrement: "init"
                         }
                     },
-                    initState:"init"
+                    initState:"init",
+                    reactsTo:["Incrementor"]
                 });
 
                 this.count=0;
+                this.inc = 1;
+            }
+
+            reactToStateChangeFrom(smName,newState){
+                if(smName==="Incrementor"){
+                    this.inc=newState;
+                }
             }
 
             increment(){
-                this.count++;
+                this.count+=this.inc;
             }
             decrement(){
-                this.count--;
+                this.count-=this.inc;
             }
         }
 
@@ -88,6 +114,7 @@
                 super({
                     machineName:"Counter",
                     hostedMachines:{
+                        Incrementor: new Incrementor(),
                         Counter: new Counter()
                     }
                 })

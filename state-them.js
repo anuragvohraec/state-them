@@ -434,7 +434,7 @@ export class StateMachine{
 
 
     searchMachine(machineName){
-        return StateMachine.searchMachineFrom(machineName,this.hostElement);
+        return StateMachine.searchMachineFrom(machineName,this.#hostElement);
     }
 
     get name(){
@@ -463,7 +463,7 @@ export class StateMachine{
     onConnection(hostElement){
         this.#hostElement=hostElement;
         if(this.#reactsTo.length>0){
-            for(let smName of reactsTo){
+            for(let smName of this.#reactsTo){
                 const sm = this.searchMachine(smName);
                 if(!sm){
                     throw `[STATE-THEM]: Required state machine not found: [${smName}] , Required by: ${JSON.stringify({host:this.#hostElement.tagName, machine: this.#name})}`;
@@ -570,7 +570,7 @@ export class StateMachineWidget extends HTMLElement{
     connectedCallback(){
         for(let smName in this.#hostedMachines){
             try{
-                this.#hostedMachines[smName].onConnection(this);
+                this.#hostedMachines[smName].onConnection(this.#root);
             }catch(e){
                 console.error(e);
             }

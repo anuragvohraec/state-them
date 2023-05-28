@@ -497,6 +497,9 @@ export class StateMachine{
      */
     do(actionName){
         let nextState = this.#model?.[this.#state]?.[actionName];
+        if(nextState===undefined){
+            throw `[STATE-THEM]: No such action: ${JSON.stringify({action:actionName, machine: this.#name, host:this.#hostElement.tagName})}`;
+        }
         if(this[actionName]){
             if(!this[actionName]()){
                 //new state
@@ -512,7 +515,7 @@ export class StateMachine{
                 }
             }
         }else{
-            throw `[STATE-THEM]: No such action: ${JSON.stringify({action:actionName, host:this.#hostElement.tagName, machine: this.#name})}`;
+            throw `[STATE-THEM]: No such method defined on state machine: ${JSON.stringify({method:actionName, machine: this.#name, host:this.#hostElement.tagName})}`;
         }
     }
 

@@ -578,7 +578,9 @@ export class StateMachineWidget extends HTMLElement{
                 throw `[STATE-THEM]: Required state machine not found: [${this.#machineName}] , Required by: ${JSON.stringify({host:this.tagName})}`;
             }
             try{
-                this.#subscription_id=this.#machine._subscribe(this.rebuild);
+                this.#subscription_id=this.#machine._subscribe((newState)=>{
+                    this.rebuild(newState);
+                });
                 this.rebuild(this.#machine.state);
             }catch(e){
                 console.error(e);

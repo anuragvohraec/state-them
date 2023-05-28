@@ -9,100 +9,51 @@
 <body>
     <my-app shadow></my-app>
     <script type="module">
-        import {html,render,repeat} from "./state-them.js";
+        import {html,render,repeat, StateMachine, StateMachineWidget} from "./state-them.js";
 
-        let items = [10,20,30];
-
-        customElements.define("my-app",class extends HTMLElement{
+        class Counter extends StateMachine{
             constructor(){
-                super();
-                if(this.hasAttribute("shadow")){
-                    this.attachShadow({mode: "open"});
-                }
-                
-                this._root.prevValues=[];
+                super({
+                    name:"Counter",
+                    model:{
+                        init:{
+                            increment: init,
+                            decrement: init
+                        }
+                    },
+                    initState:"init"
+                });
+
+                this.count=0;
             }
 
-            connectedCallback(){
-                render(this._root,this.build(5));
-                setTimeout(()=>{
-                    render(this._root,this.build(10));
-                },2000);
-
-                setTimeout(()=>{
-                    render(this._root,this.build(50));
-                },4000);
-
-                setTimeout(()=>{
-                    render(this._root,this.build(60));
-                },6000);
-
-                 setTimeout(()=>{
-                    items=[10,100,30]
-                    render(this._root,this.build(60));
-                },8000);
-
-                // render(this._root,this.build(60));
-
-                // setTimeout(()=>{
-                //     items=[10,100,30]
-                //     render(this._root,this.build(60));
-                // },2000);
-
-                // setTimeout(()=>{
-                //     items=[10,100,30,40,50]
-                //     render(this._root,this.build(60));
-                // },4000);
-
-
-                // setTimeout(()=>{
-                //     items=[10,20,30]
-                //     render(this._root,this.build(60));
-                // },6000);
-
-                // setTimeout(()=>{
-                //     render(this._root,this.build(70));
-                // },8000);
-
-                // render(this._root,this.build(50));
-
-                // setTimeout(()=>{
-                //     render(this._root,this.build(60));
-                // },2000);
-                
+            increment(){
+                this.count++;
             }
+            decrement(){
+                this.count--;
+            }
+        }
 
-            get _root(){
-                if(this.hasAttribute("shadow")){
-                    return this.shadowRoot;
-                }else{
-                    return this;
-                }
+        class CounterWidget extends StateMachineWidget{
+            constructor(){
+                super({
+                    machineName:"Counter",
+                    hostedMachines:{
+                        Counter: new Counter()
+                    }
+                })
             }
 
             build(state){
-                if(state<50){
-                    const s = "abcd"+state;
-                    let m="";
-                    if(state==10){
-                        m="font-weight:bold";
-                    }
-                    return html`<div @click=${()=>{
-                        console.log("hello ", state);
-                    }}><div style="color:red;" test=${s}>Value is: ${state}, <span ?style=${m}>and lets add it here too <i>${state+1}</i></span>. so Other can see</div></div>`;
-                }else{
-                    return html`<div at1=${state+50}>Value is : ${state>50?html`Bigger: ${state}<br>
-                        <ol>
-                            ${repeat(items,i=>i,(item)=>html`<li>${item}</li>`)}
-                        </ol>`:html`Equals: ${state}`}</div>`;
-                }
-
-
-                // return html`<ol>
-                //     ${repeat(items,i=>i,(item)=>html`<li>${item}</li>`)}
-                //     </ol>`;
+                return html`<div>
+                    <button @click=${this.machine.act("increment")}>increment</button>
+                    <button @click=${this.machine.act("decrement")}>decrement</button>
+                    <br>
+                    ${this.machine.count}
+                    </div>`;
             }
-        });
+        }
     </script>
 </body>
 </html>

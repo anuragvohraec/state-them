@@ -415,7 +415,6 @@ export class StateMachine{
      * 
      */
     constructor({name, model=undefined, initState=undefined,reactsTo=[]}){
-        super();
         this.#name=name;
         if(model){
             this.#model=model;
@@ -492,7 +491,7 @@ export class StateMachine{
      */
     act(actionName){
         if(this[actionName]){
-            if(this[actionName]()){
+            if(!this[actionName]()){
                 //new state
                 this.#state = this.#model[this.#state][actionName];
 
@@ -516,7 +515,6 @@ export class StateMachineWidget extends HTMLElement{
         machineName,
         hostedMachines={},
     }){
-        super();
         this.#machineName=machineName;
         this.#hostedMachines=hostedMachines;
 

@@ -389,6 +389,15 @@ export function repeat(items,idFunction,templateFunction){
 
 export class StateMachine{
 
+    #name;
+    #model;
+    #state;
+    #listeners={};
+    #id=0;
+    #reactsTo;
+    #foundMachines={};
+    #hostElement;
+
     static searchMachineFrom(machineName, startingElement){
         let currentEl = startingElement;
         while(currentEl){
@@ -420,10 +429,7 @@ export class StateMachine{
             this.#model=model;
             this.#state=initState;
         }
-        this.#listeners={};
-        this.#id=0;
         this.#reactsTo=reactsTo;
-        this.#foundMachines={};
     }
 
 
@@ -479,7 +485,7 @@ export class StateMachine{
         for(let smName in this.#foundMachines){
             try{
                 let {machine, subscription_id}=this.#foundMachines[smName];
-                machine.#unsubscribe(subscription_id);
+                machine._unsubscribe(subscription_id);
             }catch(e){
                 console.error(e);
             }
@@ -511,10 +517,17 @@ export class StateMachine{
 }
 
 export class StateMachineWidget extends HTMLElement{
+    #machineName;
+    #hostedMachines;
+    #root;
+    #machine;
+    #subscription_id;
+
     constructor({
         machineName,
         hostedMachines={},
     }){
+        super();
         this.#machineName=machineName;
         this.#hostedMachines=hostedMachines;
 
@@ -567,6 +580,7 @@ export class StateMachineWidget extends HTMLElement{
             }
             try{
                 this.#subscription_id=this.#machine._subscribe(this.rebuild);
+                this.rebuild(this.#machine.state);
             }catch(e){
                 console.error(e);
             }

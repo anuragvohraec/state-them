@@ -17,8 +17,8 @@
                     name:"Counter",
                     model:{
                         init:{
-                            increment: init,
-                            decrement: init
+                            increment: "init",
+                            decrement: "init"
                         }
                     },
                     initState:"init"
@@ -47,13 +47,19 @@
 
             build(state){
                 return html`<div>
-                    <button @click=${this.machine.act("increment")}>increment</button>
-                    <button @click=${this.machine.act("decrement")}>decrement</button>
+                    <button @click=${()=>{
+                        this.machine.act("increment");
+                    }}>increment</button>
+                    <button @click=${()=>{
+                        this.machine.act("decrement");
+                    }}>decrement</button>
                     <br>
                     ${this.machine.count}
                     </div>`;
             }
         }
+
+        customElements.define("my-app",CounterWidget);
     </script>
 </body>
 </html>

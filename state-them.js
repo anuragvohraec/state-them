@@ -495,8 +495,8 @@ export class StateMachine{
     /**
      * If return true than state is changed
      */
-    act(actionName){
-        let nextState = this.model?.(this.#state)?.[actionName];
+    do(actionName){
+        let nextState = this.#model?.[this.#state]?.[actionName];
         if(!this[actionName]()){
             //new state
             this.#state = nextState;

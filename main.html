@@ -48,10 +48,10 @@
             build(state){
                 return html`<div>
                     <button @click=${()=>{
-                        this.machine.act("increment");
+                        this.machine.do("increment");
                     }}>increment</button>
                     <button @click=${()=>{
-                        this.machine.act("decrement");
+                        this.machine.do("decrement");
                     }}>decrement</button>
                     <br>
                     ${this.machine.count}

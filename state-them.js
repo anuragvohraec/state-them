@@ -427,7 +427,14 @@ export class StateMachine{
         this.#name=name;
         if(model){
             this.#model=model;
-            this.#state=initState;
+            if(initState){
+                this.#state=initState;
+            }else{
+                let k = Object.keys(model);
+                if(k.length>0){
+                    this.#state=k[0];
+                }
+            }
         }
         this.#reactsTo=reactsTo;
     }

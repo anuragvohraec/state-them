@@ -24,6 +24,13 @@
                 this.increment=1;
             }
 
+            onConnection(he){
+                super.onConnection(he);
+                setTimeout(()=>{
+                    this.do("changeNow");
+                },5000);
+            }
+
             changeNow(){
                 this.increment=5;
             }
@@ -95,9 +102,9 @@
                 this.inc = 1;
             }
 
-            reactToStateChangeFrom(smName,newState){
-                if(smName==="Incrementor"){
-                    this.inc=newState;
+            reactToStateChangeFrom(sm){
+                if(sm.name==="Incrementor"){
+                    this.inc=sm.increment;
                 }
             }
 

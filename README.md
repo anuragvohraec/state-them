@@ -75,6 +75,44 @@ You can integrate this machine with even other machines. See `main.html` file fo
     Here a StateMachine is integrated with another StateMachine with name `Incrementor1`. Whenever the state of `Incrementor1` changes to `changed`, and 
     the listener machine is in `init` state than its`do("changeIncrement",Incrementor1StateMachineInstance)` will be called.
 
+4. Use `repeat` function to create efficiently updating a list of items.
+```
+let items=[10,20,30];
+html`<ol>
+${repeat(items,i=>i,(item,index,_id)=>{
+    return html`<li>${item}</li>`;
+})}
+</ol>`
+```
+This will produce a HTML of kind
+```
+<ol>
+    <li>10</li>
+    <li>20</li>
+    <li>30</li>
+</ol>
+```
+The signature for `repeat` function is `repeat(listOfItems,idFunction,templateFunction)`.
+    * `listOfItems` which needs to be repeated upon
+    * `idFunction` needs to create a unique id for each element. If Id of an element changes, than only it get re-rendered
+    * `templateFunction` is used to create the template which needs to repeated for the list of items.
+
+It will auto update only those items which gets updated, if `idFunction` is properly designed to cater to change id if data item changes.
+
+5. Attribute can be modified using
+```js
+html`<div customAtt=${some_varibable}></div>`
+```
+
+6. Add event listeners
+```js
+html`<div @event=${some_handler}></div>`
+```
+
+7. Add properties
+```js
+html`<div .prop=${some_value}></div>`
+```
 
 # Error Codes
 Different error codes are used , to make final built as small as possible.

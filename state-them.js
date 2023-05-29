@@ -501,13 +501,13 @@ export class StateMachine{
     /**
      * If return true than state is changed
      */
-    do(actionName){
+    do(actionName,data){
         let nextState = this.#model?.[this.#state]?.[actionName];
         if(nextState===undefined){
             throw `[STATE-THEM]: No such action: ${JSON.stringify({action:actionName, machine: this.constructor.name, host:this.#hostElement.tagName})}`;
         }
         if(this[actionName]){
-            if(!this[actionName]()){
+            if(!this[actionName](data)){
                 //new state
                 this.#state = nextState;
 

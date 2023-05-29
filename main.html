@@ -132,7 +132,7 @@
             build(state){
                 return html`<div>
                     <button @click=${()=>{
-                        this.machine.do("increment",4);
+                        this.machine.do("increment");
                     }}>increment</button>
                     <button @click=${()=>{
                         this.machine.do("decrement");

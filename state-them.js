@@ -363,7 +363,6 @@ export function repeat(items,idFunction,templateFunction){
     const result=[];
     items.forEach((item,index)=>{
         const _id = idFunction(item);
-        //rebuild is probably required
         const templateResult=templateFunction(item,index,_id);
         templateResult._id=_id;
         result.push(templateResult);

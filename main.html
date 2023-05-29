@@ -91,21 +91,26 @@
                     model:{
                         init:{
                             increment: "init",
-                            decrement: "init"
+                            decrement: "init",
+                            changeIncrement:"init"
                         }
                     },
                     initState:"init",
-                    reactsTo:["Incrementor1"]
+                    reactsTo:{
+                        Incrementor1:{
+                            "changed":{
+                                "init":"changeIncrement"
+                            }
+                        }
+                    }
                 });
 
                 this.count=0;
                 this.inc = 1;
             }
 
-            reactToStateChangeOf(sm){
-                if(sm.name==="Incrementor1"){
-                    this.inc=sm.increment;
-                }
+            changeIncrement(sm){
+                this.inc=sm.increment;
             }
 
             increment(){

@@ -426,7 +426,7 @@ export class StateMachine{
      * @param {any} model:
      * 
      */
-    constructor({model=undefined, initState=undefined,reactsTo=[]}){
+    constructor({model=undefined, initState=undefined,reactsTo={}}){
         if(model){
             this.#model=model;
             if(initState){
@@ -460,23 +460,24 @@ export class StateMachine{
         delete this.#listeners[subscription_id];
     }
 
-
-    reactToStateChangeOf(machine){
-
-    }
-
     onConnection(hostElement, machineName){
         this.#machineName=machineName;
         this.#hostElement=hostElement;
-        if(this.#reactsTo.length>0){
-            for(let smName of this.#reactsTo){
+        if(Object.keys(this.#reactsTo).length>0){
+            for(let smName in this.#reactsTo){
                 const sm = this.searchMachine(smName);
                 if(!sm){
                     throw `[STATE-THEM]: Required state machine not found: [${smName}] , Required by: ${JSON.stringify({host:this.#hostElement.tagName, machine: this.constructor.name})}`;
                 }
 
                 const newStateHandler =(newState)=>{
-                    this.reactToStateChangeOf(sm);
+                    const s = this.#reactsTo[smName][newState];
+                    if(s){
+                        const a = s[this.#state];
+                        if(a){
+                            this.do(a,sm);
+                        }
+                    }
                 };
 
                 this.#foundMachines[smName]={

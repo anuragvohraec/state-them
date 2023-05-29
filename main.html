@@ -14,7 +14,6 @@
         class Incrementor extends StateMachine{
             constructor(){
                 super({
-                    name:"Incrementor",
                     model:{
                         "init":{
                             changeNow:"changed"
@@ -39,7 +38,6 @@
         class ColorChanger extends StateMachine{
             constructor(){
                 super({
-                    name:"ColorChanger",
                     model:{
                         "black":{
                             changeToRed:"red",
@@ -87,7 +85,6 @@
         class Counter extends StateMachine{
             constructor(){
                 super({
-                    name:"Counter",
                     model:{
                         init:{
                             increment: "init",
@@ -96,7 +93,7 @@
                         }
                     },
                     initState:"init",
-                    reactsTo:{
+                    integrateWith:{
                         Incrementor1:{
                             "changed":{
                                 "init":"changeIncrement"

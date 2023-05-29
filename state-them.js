@@ -393,7 +393,7 @@ export class StateMachine{
     #state;
     #listeners={};
     #id=0;
-    #reactsTo;
+    #integrateWith;
     #foundMachines={};
     #hostElement;
     #machineName;
@@ -426,7 +426,7 @@ export class StateMachine{
      * @param {any} model:
      * 
      */
-    constructor({model=undefined, initState=undefined,reactsTo={}}){
+    constructor({model=undefined, initState=undefined,integrateWith={}}){
         if(model){
             this.#model=model;
             if(initState){
@@ -438,7 +438,7 @@ export class StateMachine{
                 }
             }
         }
-        this.#reactsTo=reactsTo;
+        this.#integrateWith=integrateWith;
     }
 
 
@@ -463,15 +463,15 @@ export class StateMachine{
     onConnection(hostElement, machineName){
         this.#machineName=machineName;
         this.#hostElement=hostElement;
-        if(Object.keys(this.#reactsTo).length>0){
-            for(let smName in this.#reactsTo){
+        if(Object.keys(this.#integrateWith).length>0){
+            for(let smName in this.#integrateWith){
                 const sm = this.searchMachine(smName);
                 if(!sm){
                     throw `[STATE-THEM]: Required state machine not found: [${smName}] , Required by: ${JSON.stringify({host:this.#hostElement.tagName, machine: this.constructor.name})}`;
                 }
 
                 const newStateHandler =(newState)=>{
-                    const s = this.#reactsTo[smName][newState];
+                    const s = this.#integrateWith[smName][newState];
                     if(s){
                         const a = s[this.#state];
                         if(a){

@@ -1,0 +1,16 @@
+{
+  "name": "state-them",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "state-them.js",
+  "scripts": {
+    "build": "npx rollup -c rollup.config.js"
+  },
+  "author": "anuragvohraec@gmail.com",
+  "license": "MIT",
+  "devDependencies": {
+    "rollup": "^3.23.0",
+    "rollup-plugin-terser": "^7.0.2"
+  }
+}

@@ -74,3 +74,56 @@ You can integrate this machine with even other machines. See `main.html` file fo
     ```
     Here a StateMachine is integrated with another StateMachine with name `Incrementor1`. Whenever the state of `Incrementor1` changes to `changed`, and 
     the listener machine is in `init` state than its`do("changeIncrement",Incrementor1StateMachineInstance)` will be called.
+
+
+# Error Codes
+Different error codes are used , to make final built as small as possible.
+
+1. 1 : Integrated Machine with which this machine is integrated is not found in DOM tree.
+```
+{
+    ec:1,//error code
+    im:"m1",//machines with with its integrated,
+    m:"name"// name of this machine
+    he: "host-element"//element on which this machine is hosted
+}
+```
+
+2. 2: No such action found, while calling do method on a machine.
+```
+{
+    ec:2,//error code
+    am:"action_name",
+    m:"name"// name of this machine
+    he: "host-element"//element on which this machine is hosted
+}
+```
+
+3. 3: For action to take place, one must define a function on state machine with the action name. This error code indicates that no such method is found on the state machine.
+```
+{
+    ec:3,
+    an: "action_name",
+    m:"name"// name of this machine
+    he: "host-element"//element on which this machine is hosted
+}
+```
+
+4. 4: A `StateMachineWidget` depends upon a `StateMachine`, however it cannot find it upon connection in the DOM tree.
+```
+{
+    ec:4,
+    m:"name"// name of this machine
+    he: "host-element"//element on which this machine is hosted
+}
+```
+
+5. 5: No build function found on the `StateMachineWidget`. 
+```
+{ec: 5, w:"widget-name"}
+```
+
+# Release Note
+
+## 1.0.1
+1. Error codes, to make footprint of final built small.

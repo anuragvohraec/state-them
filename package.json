@@ -1,6 +1,6 @@
 {
   "name": "state-them",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "type": "module",
   "main": "state-them.js",
@@ -12,5 +12,9 @@
   "devDependencies": {
     "rollup": "^3.23.0",
     "rollup-plugin-terser": "^7.0.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anuragvohraec/state-them.git"
   }
 }

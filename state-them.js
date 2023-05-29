@@ -462,7 +462,7 @@ export class StateMachine{
             for(let smName in this.#integrateWith){
                 const sm = StateMachine.search(smName,this.#hostElement);
                 if(!sm){
-                    throw `[STATE-THEM]: Required state machine not found: [${smName}] , Required by: ${JSON.stringify({host:this.#hostElement.tagName, machine: this.constructor.name})}`;
+                    throw `${JSON.stringify({ec:1, im: smName, he: this.#hostElement.tagName, m: this.#machineName})}`;
                 }
 
                 const newStateHandler =(newState)=>{
@@ -500,7 +500,7 @@ export class StateMachine{
     do(actionName,data){
         let nextState = this.#model?.[this.#state]?.[actionName];
         if(nextState===undefined){
-            throw `[STATE-THEM]: No such action: ${JSON.stringify({action:actionName, machine: this.constructor.name, host:this.#hostElement.tagName})}`;
+            throw `${JSON.stringify({ec:2, an: actionName, he: this.#hostElement.tagName, m: this.#machineName})}`;
         }
         if(this[actionName]){
             if(!this[actionName](data)){
@@ -517,7 +517,7 @@ export class StateMachine{
                 }
             }
         }else{
-            throw `[STATE-THEM]: No such method defined on state machine: ${JSON.stringify({method:actionName, machine: this.constructor.name, host:this.#hostElement.tagName})}`;
+            throw `${JSON.stringify({ec:3, an: actionName, he: this.#hostElement.tagName, m: this.#machineName})}`;
         }
     }
 
@@ -584,7 +584,7 @@ export class StateMachineWidget extends HTMLElement{
         if(this.#machineName){
             this.#machine=StateMachine.search(this.#machineName,this);
             if(!this.#machine){
-                throw `[STATE-THEM]: Required state machine not found: [${this.#machineName}] , Required by: ${JSON.stringify({host:this.tagName})}`;
+                throw `${JSON.stringify({ec:4, he: this.tagName, m: this.#machineName})}`;
             }
             try{
                 this.#subscription_id=this.#machine._subscribe((newState)=>{
@@ -613,7 +613,7 @@ export class StateMachineWidget extends HTMLElement{
 
     rebuild(newState){
         if(!this.build){
-            throw `[STATE-THEM]: No build function found for ${this.tagName}`;
+            throw `${JSON.stringify({ec:5, w:this.tagName})}`;
         }
         render(this.#root,this.build(newState));
     }

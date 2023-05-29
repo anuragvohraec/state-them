@@ -398,7 +398,7 @@ export class StateMachine{
     #hostElement;
     #machineName;
 
-    static searchMachineFrom(machineName, startingElement){
+    static search(machineName, startingElement){
         let currentEl = startingElement;
         while(currentEl){
             if(currentEl instanceof StateMachineWidget){
@@ -441,11 +441,6 @@ export class StateMachine{
         this.#integrateWith=integrateWith;
     }
 
-
-    searchMachine(machineName){
-        return StateMachine.searchMachineFrom(machineName,this.#hostElement);
-    }
-
     get state(){
         return this.#state;
     }
@@ -465,7 +460,7 @@ export class StateMachine{
         this.#hostElement=hostElement;
         if(Object.keys(this.#integrateWith).length>0){
             for(let smName in this.#integrateWith){
-                const sm = this.searchMachine(smName);
+                const sm = StateMachine.search(smName,this.#hostElement);
                 if(!sm){
                     throw `[STATE-THEM]: Required state machine not found: [${smName}] , Required by: ${JSON.stringify({host:this.#hostElement.tagName, machine: this.constructor.name})}`;
                 }
@@ -587,7 +582,7 @@ export class StateMachineWidget extends HTMLElement{
         }
 
         if(this.#machineName){
-            this.#machine=StateMachine.searchMachineFrom(this.#machineName,this);
+            this.#machine=StateMachine.search(this.#machineName,this);
             if(!this.#machine){
                 throw `[STATE-THEM]: Required state machine not found: [${this.#machineName}] , Required by: ${JSON.stringify({host:this.tagName})}`;
             }

@@ -24,8 +24,8 @@
                 this.increment=1;
             }
 
-            onConnection(he){
-                super.onConnection(he);
+            onConnection(he,mn){
+                super.onConnection(he,mn);
                 setTimeout(()=>{
                     this.do("changeNow");
                 },5000);
@@ -52,8 +52,8 @@
                 });
             }
 
-            onConnection(he){
-                super.onConnection(he);
+            onConnection(he,mn){
+                super.onConnection(he,mn);
                 setTimeout(()=>{
                     this.do("changeToRed");
                 },3000);
@@ -95,7 +95,7 @@
                         }
                     },
                     initState:"init",
-                    reactsTo:["Incrementor"]
+                    reactsTo:["Incrementor1"]
                 });
 
                 this.count=0;
@@ -103,7 +103,7 @@
             }
 
             reactToStateChangeOf(sm){
-                if(sm.name==="Incrementor"){
+                if(sm.name==="Incrementor1"){
                     this.inc=sm.increment;
                 }
             }
@@ -119,10 +119,10 @@
         class CounterWidget extends StateMachineWidget{
             constructor(){
                 super({
-                    machineName:"Counter",
+                    machineName:"Counter1",
                     hostedMachines:{
-                        Incrementor: new Incrementor(),
-                        Counter: new Counter()
+                        Incrementor1: new Incrementor(),
+                        Counter1: new Counter()
                     }
                 })
             }

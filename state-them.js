@@ -389,7 +389,6 @@ export function repeat(items,idFunction,templateFunction){
 
 export class StateMachine{
 
-    #name;
     #model;
     #state;
     #listeners={};
@@ -397,6 +396,7 @@ export class StateMachine{
     #reactsTo;
     #foundMachines={};
     #hostElement;
+    #machineName;
 
     static searchMachineFrom(machineName, startingElement){
         let currentEl = startingElement;
@@ -416,15 +416,17 @@ export class StateMachine{
         }
     }
 
+    get name(){
+        return this.#machineName;
+    }
+
     /**
      * 
-     * @param {string} name : name of this state machine, used for subscription
      * @param {string} initState: the initial state for this
      * @param {any} model:
      * 
      */
-    constructor({name, model=undefined, initState=undefined,reactsTo=[]}){
-        this.#name=name;
+    constructor({model=undefined, initState=undefined,reactsTo=[]}){
         if(model){
             this.#model=model;
             if(initState){
@@ -442,10 +444,6 @@ export class StateMachine{
 
     searchMachine(machineName){
         return StateMachine.searchMachineFrom(machineName,this.#hostElement);
-    }
-
-    get name(){
-        return this.#name;
     }
 
     get state(){
@@ -467,13 +465,14 @@ export class StateMachine{
 
     }
 
-    onConnection(hostElement){
+    onConnection(hostElement, machineName){
+        this.#machineName=machineName;
         this.#hostElement=hostElement;
         if(this.#reactsTo.length>0){
             for(let smName of this.#reactsTo){
                 const sm = this.searchMachine(smName);
                 if(!sm){
-                    throw `[STATE-THEM]: Required state machine not found: [${smName}] , Required by: ${JSON.stringify({host:this.#hostElement.tagName, machine: this.#name})}`;
+                    throw `[STATE-THEM]: Required state machine not found: [${smName}] , Required by: ${JSON.stringify({host:this.#hostElement.tagName, machine: this.constructor.name})}`;
                 }
 
                 const newStateHandler =(newState)=>{
@@ -505,7 +504,7 @@ export class StateMachine{
     do(actionName){
         let nextState = this.#model?.[this.#state]?.[actionName];
         if(nextState===undefined){
-            throw `[STATE-THEM]: No such action: ${JSON.stringify({action:actionName, machine: this.#name, host:this.#hostElement.tagName})}`;
+            throw `[STATE-THEM]: No such action: ${JSON.stringify({action:actionName, machine: this.constructor.name, host:this.#hostElement.tagName})}`;
         }
         if(this[actionName]){
             if(!this[actionName]()){
@@ -522,7 +521,7 @@ export class StateMachine{
                 }
             }
         }else{
-            throw `[STATE-THEM]: No such method defined on state machine: ${JSON.stringify({method:actionName, machine: this.#name, host:this.#hostElement.tagName})}`;
+            throw `[STATE-THEM]: No such method defined on state machine: ${JSON.stringify({method:actionName, machine: this.constructor.name, host:this.#hostElement.tagName})}`;
         }
     }
 
@@ -580,7 +579,7 @@ export class StateMachineWidget extends HTMLElement{
     connectedCallback(){
         for(let smName in this.#hostedMachines){
             try{
-                this.#hostedMachines[smName].onConnection(this.#root);
+                this.#hostedMachines[smName].onConnection(this.#root,smName);
             }catch(e){
                 console.error(e);
             }

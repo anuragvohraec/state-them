@@ -129,17 +129,17 @@
                 })
             }
 
-            build(state){
+            build(state,machine){
                 return html`<div>
                     <button @click=${()=>{
-                        this.machine.do("increment");
+                        machine.do("increment");
                     }}>increment</button>
                     <button @click=${()=>{
-                        this.machine.do("decrement");
+                        machine.do("decrement");
                     }}>decrement</button>
                     <br>
                     <color-changer shadow>
-                    ${this.machine.count}
+                    ${machine.count}
                     </color-changer>
                     </div>`;
             }

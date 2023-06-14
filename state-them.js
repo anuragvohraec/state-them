@@ -589,11 +589,12 @@ export class StateMachineWidget extends HTMLElement{
                 this.#subscription_id=this.#machine._subscribe((newState)=>{
                     this.rebuild(newState);
                 });
-                this.rebuild(this.#machine.state);
             }catch(e){
                 console.error(e);
             }
         }
+
+        this.rebuild(this.#machine?.state);
     }
 
     disconnectedCallback(){
@@ -614,7 +615,7 @@ export class StateMachineWidget extends HTMLElement{
         if(!this.build){
             throw `${JSON.stringify({ec:5, w:this.tagName})}`;
         }
-        render(this.#root,this.build(newState));
+        render(this.#root,this.build(newState,this.#machine));
     }
 
 }

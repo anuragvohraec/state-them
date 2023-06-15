@@ -68,7 +68,7 @@ function createEmptyFragment(){
 function replaceInBetweenCommentNode(startCommentNode,nodeToInsert){
     let cNode=startCommentNode.nextSibling;
     const parent = startCommentNode.parentNode;
-    while(!(cNode === startCommentNode.endCommentNode)){
+    while(cNode && !(cNode === startCommentNode.endCommentNode)){
         let nNode = cNode.nextSibling
         parent.removeChild(cNode);
         cNode=nNode;
@@ -229,7 +229,11 @@ export function render(targetNode,templateResult){
                         moveNodeIteratorTill(currentNode.endCommentNode,i);
                         
                     }
+                }else{
+                    //if value are same move till next node
+                    moveNodeIteratorTill(currentNode.endCommentNode,i);
                 }
+                
                 index++;
             }else if(currentNode.nodeType===Node.ELEMENT_NODE){
                 let hasAttributes=false;
@@ -501,23 +505,39 @@ export class StateMachine{
         if(nextState===undefined){
             throw `${JSON.stringify({ec:2, an: actionName, he: this.#hostElement.tagName, m: this.#machineName})}`;
         }
-        if(this[actionName]){
-            if(!this[actionName](data)){
-                //new state
-                this.#state = nextState;
 
-                //publish new state to all listeners
-                for(let id in this.#listeners){
-                    try{
-                        this.#listeners[id](nextState);
-                    }catch(e){
-                        console.error(e);
-                    }
-                }
+        //actions to execute before state change
+        this?.[actionName]?.(data);
+
+        //new state
+        this.#state = nextState;
+
+        //publish new state to all listeners
+        for(let id in this.#listeners){
+            try{
+                this.#listeners[id](nextState);
+            }catch(e){
+                console.error(e);
             }
-        }else{
-            throw `${JSON.stringify({ec:3, an: actionName, he: this.#hostElement.tagName, m: this.#machineName})}`;
         }
+
+        // if(this[actionName]){
+        //     if(!this[actionName](data)){
+        //         //new state
+        //         this.#state = nextState;
+
+        //         //publish new state to all listeners
+        //         for(let id in this.#listeners){
+        //             try{
+        //                 this.#listeners[id](nextState);
+        //             }catch(e){
+        //                 console.error(e);
+        //             }
+        //         }
+        //     }
+        // }else{
+        //     throw `${JSON.stringify({ec:3, an: actionName, he: this.#hostElement.tagName, m: this.#machineName})}`;
+        // }
     }
 
 

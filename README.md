@@ -137,7 +137,8 @@ Different error codes are used , to make final built as small as possible.
 }
 ```
 
-3. 3: For action to take place, one must define a function on state machine with the action name. This error code indicates that no such method is found on the state machine.
+3. 3: DEPRECATED : If an action do not exist the state will simply transform as per model.
+For action to take place, one must define a function on state machine with the action name. This error code indicates that no such method is found on the state machine.
 ```
 {
     ec:3,

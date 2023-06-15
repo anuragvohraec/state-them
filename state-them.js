@@ -99,6 +99,9 @@ export function render(targetNode,templateResult){
         const node = tNode.content.cloneNode(true);
         targetNode.appendChild(node);
     }
+    if(values.length==0){
+        return;
+    }
 
     //does the diffing process and change only those node which got changed
     {
@@ -230,8 +233,10 @@ export function render(targetNode,templateResult){
                         
                     }
                 }else{
-                    //if value are same move till next node
-                    moveNodeIteratorTill(currentNode.endCommentNode,i);
+                    if(!(cv.templates || Array.isArray(cv))){
+                        //if value are same move till next node
+                        moveNodeIteratorTill(currentNode.endCommentNode,i);
+                    }
                 }
                 
                 index++;
@@ -635,7 +640,11 @@ export class StateMachineWidget extends HTMLElement{
         if(!this.build){
             throw `${JSON.stringify({ec:5, w:this.tagName})}`;
         }
-        render(this.#root,this.build(newState,this.#machine));
+        let t = this.build(newState,this.#machine);
+        if(!t){
+            t=html``;
+        }
+        render(this.#root,t);
     }
 
 }

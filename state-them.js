@@ -170,37 +170,6 @@ class STAttributeHandler{
     }
 }
 
-function createStaticIteratorForApplicableNodes(targetNode){
-    const l =[];
-    let i = document.createNodeIterator(targetNode);
-    let currentNode=targetNode;
-    if(currentNode.nodeType===Node.COMMENT_NODE && currentNode.textContent===ASNT){
-        l.push(currentNode)
-    }else if(currentNode.nodeType===Node.ELEMENT_NODE){
-        let caseOfReRender=false;
-        if(currentNode.stAt){
-            caseOfReRender=true;
-        }
-
-        if(!caseOfReRender){
-            if(currentAttribute.value===ASNT){
-                l.push(currentNode);
-            }
-        }else{
-            l.push(currentNode);
-        }
-    }
-
-    currentNode=i.nextNode();
-
-    l.referenceNode=currentNode;
-    l.nextNode = function (){
-        this.referenceNode = this.unshift();
-        return this.referenceNode;
-    }
-    return l;
-}
-
 
 export function render(targetNode,templateResult){
     const {templates,values,_id}=templateResult;

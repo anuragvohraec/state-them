@@ -87,6 +87,121 @@ function moveNodeIteratorTill(tillNode, iterator){
 }
 
 
+/**
+ * SPECIAL MARKS
+ */
+const SM=new Set([".","@","?"]);
+
+class STAttributeHandler{
+    constructor(node){
+        this.node=node;
+        this.atReg={};
+        this.planAttCount=-1;
+    }
+
+    getAttributeAtIndex(index){
+        return this.atReg[index];
+    }
+
+    /**
+     * this is used, as to get actual attribute count during re-render
+     */
+    getNumberOfPlaneAttribute(){
+        if(this.planAttCount<0){
+            this.planAttCount=0;
+            Object.values(this.atReg).forEach(e=>{
+                let s = e.name[0];
+                if(!SM.has(s)){
+                    this.planAttCount++;
+                }
+            });
+        }
+        return this.planAttCount;
+    }
+
+    getTotalAttributeCount(){
+        return Object.keys(this.atReg).length;
+    }
+
+    handleAttributeChange(index, atName,newValue){
+        const oldAtValue = this.atReg[index]?.value;
+        //if old value is not equal to new value only than do he changes
+        if(oldAtValue!==newValue){
+            this.atReg[index]={name:atName,value: newValue};
+            const propertyName = atName.substring(1);
+            //if its a property change request
+            if(atName.startsWith(".")){
+                //set new value
+                this.node[propertyName]=newValue;
+                // and remove the old attribute
+                this.node.removeAttribute(atName);
+            }else if(atName.startsWith("@")){
+                //get oldListener
+                const oldListener = this.atReg[index]?.value;
+                //if it exist then remove it from node
+                if(oldListener){
+                    this.node.removeEventListener(propertyName,oldListener);
+                }
+                //if newValue exist, then add it as event listener
+                if(newValue){
+                    this.node.addEventListener(propertyName,newValue);
+                }
+                // and remove the old attribute
+                this.node.removeAttribute(atName);
+            }else{
+
+                //if new value is falsy and is marked optional
+                if(!newValue && atName.startsWith("?")){
+                    this.node.removeAttribute(atName);
+                }else{
+                    let effectiveName = atName;
+                    //if its optional then effective name is propertyName
+                    // and remove the old attribute
+                    if(atName.startsWith("?")){
+                        effectiveName=propertyName;
+                        this.node.removeAttribute(atName);
+                    }
+                    //get its string representation and set it as attribute value
+                    const s = newValue?newValue.toString():"";
+                    this.node.setAttribute(effectiveName,s);
+                }
+            }   
+        }
+    }
+}
+
+function createStaticIteratorForApplicableNodes(targetNode){
+    const l =[];
+    let i = document.createNodeIterator(targetNode);
+    let currentNode=targetNode;
+    if(currentNode.nodeType===Node.COMMENT_NODE && currentNode.textContent===ASNT){
+        l.push(currentNode)
+    }else if(currentNode.nodeType===Node.ELEMENT_NODE){
+        let caseOfReRender=false;
+        if(currentNode.stAt){
+            caseOfReRender=true;
+        }
+
+        if(!caseOfReRender){
+            if(currentAttribute.value===ASNT){
+                l.push(currentNode);
+            }
+        }else{
+            l.push(currentNode);
+        }
+    }
+
+    currentNode=i.nextNode();
+
+    l.referenceNode=currentNode;
+    l.nextNode = function (){
+        this.referenceNode = this.unshift();
+        return this.referenceNode;
+    }
+    return l;
+}
+
+
 export function render(targetNode,templateResult){
     const {templates,values,_id}=templateResult;
   
@@ -241,126 +356,45 @@ export function render(targetNode,templateResult){
                 
                 index++;
             }else if(currentNode.nodeType===Node.ELEMENT_NODE){
-                let hasAttributes=false;
                 let attributeCount = currentNode.attributes.length;
-                if(attributeCount>0){
-                    hasAttributes=true;
-                }
 
                 let caseOfReRender=false;
                 if(currentNode.stAt){
                     caseOfReRender=true;
-                    attributeCount=Object.keys(currentNode.stAt).length;
+                    attributeCount=attributeCount+currentNode.stAt.getTotalAttributeCount()-currentNode.stAt.getNumberOfPlaneAttribute();
                 }
 
                 if(attributeCount>0){
                     for(let j=0;j<attributeCount;j++){
-                        if(hasAttributes && !caseOfReRender){
+                        if(!caseOfReRender){
                             let currentAttribute = currentNode.attributes[j];
                         
                             if(currentAttribute.value===ASNT){
                                 //first time render
                                 if(!currentNode.stAt){
-                                    currentNode.stAt={};
+                                    currentNode.stAt=new STAttributeHandler(currentNode);
                                 }
                                 
-                                let pv = currentAttribute._id;
-                                let currentValue=currentValues[index];
-
-                                if(pv!==currentValue){
-                                    currentAttribute._id = currentValues[index];
-
-                                    //if attribute starts with . then its property set
-                                    if(currentAttribute.name.startsWith(".")){
-                                        const propertyName = currentAttribute.name.substring(1);
-                                        currentNode[propertyName]=currentValue;
-                                        currentNode.removeAttribute(currentAttribute.name);
-                                    }
-                                    
-                                    else if(currentAttribute.name.startsWith("@")){
-                                        const eventName = currentAttribute.name.substring(1);
-                                        //remove previous listeners
-                                        if(pv){
-                                            currentNode.removeEventListener(eventName,pv);
-                                        }
-                                        currentNode.addEventListener(eventName,currentValue);
-                                        currentNode.removeAttribute(currentAttribute.name);
-                                    }
-                                    
-                                    else{
-                                        let s = "";
-                                        if(currentValue){
-                                            s=currentValue.toString();
-                                        }
-                                        let attributeName = currentAttribute.name;
-                                        if(attributeName.startsWith("?")){
-                                            if(s){
-                                                currentNode.removeAttribute(attributeName);
-                                                let t1=attributeName.substring(1);
-                                                currentNode.setAttribute(t1,s);
-                                            }else{
-                                                currentNode.removeAttribute(attributeName);
-                                                let t1=attributeName.substring(1);
-                                                currentNode.removeAttribute(t1);
-                                            }
-                                        }else{
-                                            currentAttribute.value=s;
-                                        }
-                                        
-                                    }
-
-                                    currentNode.stAt[index]=currentAttribute;
-                                }
+                                currentNode.stAt.handleAttributeChange(index,currentAttribute.name,currentValues[index]);
+                                
                                 index++;
                             }   
                         }else if(caseOfReRender){
 
-                            let currentAttribute = currentNode.stAt[index];
-                            let pv = currentAttribute._id;
-                            let currentValue=currentValues[index];
-
-                            if(pv!==currentValue){
-                                currentAttribute._id= currentValue;
-                                const attributeName = currentAttribute.name;
-
-                                //if attribute starts with . then its property set
-                                if(attributeName.startsWith(".")){
-                                    const propertyName = attributeName.substring(1);
-                                    currentNode[propertyName]=currentValue;
-                                }else if(attributeName.startsWith("@")){
-                                    const eventName = attributeName.substring(1);
-                                    //remove previous listeners
-                                    if(pv){
-                                        currentNode.removeEventListener(eventName,pv);
-                                    }
-                                    currentNode.addEventListener(eventName,currentValue);
-                                }else{
-                                    let s = "";
-                                    if(currentValue){
-                                        s=currentValue.toString();
-                                    }
-                                    if(attributeName.startsWith("?")){
-                                        if(s){
-                                            let t1=attributeName.substring(1);
-                                            currentNode.setAttribute(t1,s);
-                                        }else{
-                                            let t1=attributeName.substring(1);
-                                            currentNode.removeAttribute(t1);
-                                        }
-                                    }else{
-                                        currentAttribute.value=s;
-                                    }
-                                }
-
-                            }
+                            let currentAttribute = currentNode.stAt.getAttributeAtIndex(index);
+                            currentNode.stAt.handleAttributeChange(index,currentAttribute.name,currentValues[index]);
+                            
                             index++;
                         }
                     }
                 }
                
             }
-
+            let prevNode= currentNode;
             currentNode=i.nextNode();
+            if(prevNode===currentNode){
+                
+            }
         }
     }
 

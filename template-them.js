@@ -28,8 +28,8 @@ export function html(templates,...values){
         }
     }
     t.innerHTML=s;//templates.join(TEXT_SENTINEL);
-    if(!cache.has(templates)){
-        cache.set(templates,t);
+    if(!templateCache.has(templates)){
+        templateCache.set(templates,t);
     }
     return {
         _id:values,
@@ -112,15 +112,15 @@ export function render(target,templateResult){
     const {templates,values}=templateResult;
 
     //if templates have changed then clean up the target node
-    if(targetNode.prevTemplates!==templates){
-        targetNode.prevTemplates=templates;
-        for(let c of targetNode.childNodes){
-            targetNode.removeChild(c);
+    if(target.prevTemplates!==templates){
+        target.prevTemplates=templates;
+        for(let c of target.childNodes){
+            target.removeChild(c);
         }
 
         const tNode = templateCache.get(templates);
         const node = tNode.content.cloneNode(true);
-        targetNode.appendChild(node);
+        target.appendChild(node);
     }
 
     {

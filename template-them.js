@@ -41,8 +41,8 @@ export function html(templates,...values){
 function createStaticIterationList(targetNode){
     const result=[];
     const itr = document.createNodeIterator(targetNode);
-    const currentNode = targetNode;
-    while(!currentNode){
+    let currentNode = targetNode;
+    while(currentNode){
         if(currentNode.nodeType===Node.COMMENT_NODE && currentNode.textContent===ASNT){
             //this means it do not have been render even once: fresh node
             if(!currentNode.endCommentNode){
@@ -61,7 +61,7 @@ function createStaticIterationList(targetNode){
                 result.push(currentNode);
             }else{
                 for(let i=0;i<currentNode.attributes.length;i++){
-                    let currentAttribute = currentNode.attributes[j];
+                    let currentAttribute = currentNode.attributes[i];
                     if(currentAttribute.value===ASNT){
                         result.push(currentNode);
                         break;
@@ -224,10 +224,10 @@ export function render(target,templateResult){
                     
                     //case of nodes with attributes
                     const t =[];
-                    for(let a of currentNode.attributes){
+                    for(let currentAttribute of currentNode.attributes){
                         if(currentAttribute.value===ASNT){
                             currentNode.stAt[currentAttribute.name]=null;
-                            t.push(a.name);
+                            t.push(currentAttribute.name);
                         }
                     }
                     for(let a of t){
@@ -235,23 +235,23 @@ export function render(target,templateResult){
                     }  
                 }
 
-                for(let a in currentNode.stAt){
-                    let pv = currentNode.stAt[a];
+                for(let atName in currentNode.stAt){
+                    let pv = currentNode.stAt[atName];
                     let cv = values[index];
 
                     if(pv!==cv || !cv){
                         const propertyName = atName.substring(1);
                         //cv can be falsy
-                        if(a.startsWith(".")){
+                        if(atName.startsWith(".")){
                             currentNode[propertyName]=cv;
-                        }else if(a.startsWith("@")){
+                        }else if(atName.startsWith("@")){
                             if(pv){
                                 currentNode.removeEventListener(propertyName,pv);
                             }
                             if(cv){
                                 currentNode.addEventListener(propertyName,pv);
                             }
-                        }else if(a.startsWith("?")){
+                        }else if(atName.startsWith("?")){
                             if(cv){
                                 const s =cv?cv.toString():"";
                                 currentNode.setAttribute(propertyName,s);

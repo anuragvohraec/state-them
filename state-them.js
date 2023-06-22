@@ -361,8 +361,8 @@ export function render(targetNode,templateResult){
             }
             let prevNode= currentNode;
             currentNode=i.nextNode();
-            if(prevNode===currentNode){
-                
+            while(prevNode===currentNode){
+                currentNode=i.nextNode();
             }
         }
     }

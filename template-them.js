@@ -240,6 +240,7 @@ export function render(target,templateResult){
                     let cv = values[index];
 
                     if(pv!==cv || !cv){
+                        currentNode.stAt[atName]=cv;
                         const propertyName = atName.substring(1);
                         //cv can be falsy
                         if(atName.startsWith(".")){

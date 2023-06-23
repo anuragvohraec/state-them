@@ -281,7 +281,7 @@ function workOnThisNodes(applicableNodes,values){
                 const t =[];
                 for(let currentAttribute of currentNode.attributes){
                     if(currentAttribute.value===ASNT){
-                        currentNode.stAt[currentAttribute.name]=null;
+                        currentNode.stAt[currentAttribute.name]=undefined;
                         t.push(currentAttribute.name);
                     }
                 }

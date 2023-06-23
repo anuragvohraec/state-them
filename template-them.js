@@ -259,7 +259,7 @@ export function render(target,templateResult){
                             }
                         }else{
                             const s =cv?cv.toString():"";
-                            currentNode.setAttribute(propertyName,s);
+                            currentNode.setAttribute(atName,s);
                         }
                     }
 

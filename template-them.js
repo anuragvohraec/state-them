@@ -41,6 +41,9 @@ export function html(templates,...values){
 function createStaticIterationList(targetNode){
     const result=[];
     const itr = document.createNodeIterator(targetNode);
+    //skip the root node
+    itr.nextNode();
+    
     let currentNode = itr.nextNode();
     while(currentNode){
         if(currentNode.nodeType===Node.COMMENT_NODE && currentNode.textContent===ASNT){
@@ -295,7 +298,7 @@ function workOnThisNodes(applicableNodes,values){
                 let cv = values[index];
 
                 if(pv!==cv){
-                    currentNode.stAt[atName]=cv;
+                    
                     const propertyName = atName.substring(1);
                     //cv can be falsy
                     if(atName.startsWith(".")){
@@ -316,6 +319,8 @@ function workOnThisNodes(applicableNodes,values){
                         const s =cv?cv.toString():"";
                         currentNode.setAttribute(atName,s);
                     }
+
+                    currentNode.stAt[atName]=cv;
                 }
 
                 index++;

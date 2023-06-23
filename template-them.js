@@ -250,7 +250,7 @@ export function render(target,templateResult){
                                 currentNode.removeEventListener(propertyName,pv);
                             }
                             if(cv){
-                                currentNode.addEventListener(propertyName,pv);
+                                currentNode.addEventListener(propertyName,cv);
                             }
                         }else if(atName.startsWith("?")){
                             if(cv){

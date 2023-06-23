@@ -41,7 +41,7 @@ export function html(templates,...values){
 function createStaticIterationList(targetNode){
     const result=[];
     const itr = document.createNodeIterator(targetNode);
-    let currentNode = targetNode;
+    let currentNode = itr.nextNode();
     while(currentNode){
         if(currentNode.nodeType===Node.COMMENT_NODE && currentNode.textContent===ASNT){
             //this means it do not have been render even once: fresh node
@@ -294,7 +294,7 @@ function workOnThisNodes(applicableNodes,values){
                 let pv = currentNode.stAt[atName];
                 let cv = values[index];
 
-                if(pv!==cv || !cv){
+                if(pv!==cv){
                     currentNode.stAt[atName]=cv;
                     const propertyName = atName.substring(1);
                     //cv can be falsy

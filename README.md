@@ -164,5 +164,9 @@ For action to take place, one must define a function on state machine with the a
 
 # Release Note
 
+## 1.0.2
+1. Bug fixes
+2. Separated template engine into template-them.js, contains function `html`,`repeat`,`render`.
+
 ## 1.0.1
 1. Error codes, to make footprint of final built small.

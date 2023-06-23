@@ -48,7 +48,7 @@ function createStaticIterationList(targetNode){
             if(!currentNode.endCommentNode){
                 currentNode.endCommentNode=currentNode.nextSibling.nextSibling;
             }
-            if(currentNode.isArray){
+            if(currentNode.isSpecial){
                 //move till 
                 let cn = itr.nextNode();
                 while(cn!==currentNode.endCommentNode){
@@ -136,6 +136,7 @@ export function render(target,templateResult){
                     currentNode.value=cv;
 
                     if(cv && cv.templates && cv.values){
+                        currentNode.isSpecial=true;
                         if(cv.templates !== pv?.templates || cv.values!==pv?.values){
                             const tn = new DocumentFragment();
                             render(tn,cv);
@@ -143,11 +144,12 @@ export function render(target,templateResult){
                             replaceInBetweenCommentNode(currentNode,tn);
                         }
                     }else if(Array.isArray(cv)){
-                        currentNode.isArray=true;
+                        currentNode.isSpecial=true;
                         const startCommentNode=currentNode;
                         const endCommentNode=startCommentNode.endCommentNode;
-                        if(!pv){
-                            pv=[];
+                        let prevValues=pv;
+                        if(!prevValues){
+                            prevValues=[];
                         }
                         
                         /*
@@ -169,7 +171,7 @@ export function render(target,templateResult){
 
                         let k=0;
                         for(let nTR of cv){
-                            let oTR = pv[k];
+                            let oTR = prevValues[k];
                             //nTR and oTR are of type : {_id,templates,values,startCommentNode}
                             
                             if(nTR._id!==oTR?._id){
@@ -202,8 +204,8 @@ export function render(target,templateResult){
 
                         //if k is less than the length of previous values
                         //this nodes are no more required and hence will be removed
-                        if(k<pv.length-1){
-                            let cn = pv[k].startCommentNode;
+                        if(k<prevValues.length-1){
+                            let cn = prevValues[k].startCommentNode;
                             while(cn!==endCommentNode){
                                 let nn = cn.nextSibling;
                                 //remove all nodes till you see end comment node

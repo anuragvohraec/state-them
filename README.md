@@ -164,6 +164,9 @@ For action to take place, one must define a function on state machine with the a
 
 # Release Note
 
+## 1.0.3
+1. Bug fixed: While create static list of applicable nodes, one muts not go down the custom elements and inside its children.
+
 ## 1.0.2
 1. Bug fixes
 2. Separated template engine into template-them.js, contains function `html`,`repeat`,`render`.

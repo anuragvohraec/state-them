@@ -164,6 +164,9 @@ For action to take place, one must define a function on state machine with the a
 
 # Release Note
 
+## 1.0.4
+1. Default value of for StateMachineWidget constructor. Now no more required to define constructor, if there is no super call.
+
 ## 1.0.3
 1. Bug fixed: While create static list of applicable nodes, one muts not go down the custom elements and inside its children.
 

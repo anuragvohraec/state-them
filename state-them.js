@@ -179,7 +179,7 @@ export class StateMachineWidget extends HTMLElement{
     constructor({
         machineName,
         hostedMachines={},
-    }){
+    }={}){
         super();
         this.#machineName=machineName;
         this.#hostedMachines=hostedMachines;

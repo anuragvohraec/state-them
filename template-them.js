@@ -71,6 +71,14 @@ function createStaticIterationList(targetNode){
                     } 
                 }
             }
+            //if its custom element simply skip all its child
+            // if(customElements.get(currentNode.tagName.toLowerCase())){
+            //     let cn = itr.nextNode();
+            //     while(currentNode.contains(cn)){
+            //         cn=itr.nextNode();
+            //     }
+            //     currentNode=cn;
+            // }
         }
         currentNode=itr.nextNode();
     }
@@ -112,6 +120,15 @@ function createNodeListBetween(startCommentNode){
                     } 
                 }
             }
+
+            //if its custom element simply skip all its child
+            // if(customElements.get(currentNode.tagName.toLowerCase())){
+            //     let cn = itr.nextNode();
+            //     while(currentNode.contains(cn)){
+            //         cn=itr.nextNode();
+            //     }
+            //     currentNode=cn;
+            // }
         }
         currentNode = itr.nextNode();
     }

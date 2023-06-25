@@ -182,8 +182,7 @@ export function render(target,templateResult){
     //if templates have changed then clean up the target node
     if(target.prevTemplates!==templates){
         target.prevTemplates=templates;
-        const t = Array.from(target.childNodes);
-        for(let c of t){
+        for(let c of target.childNodes){
             target.removeChild(c);
         }
 

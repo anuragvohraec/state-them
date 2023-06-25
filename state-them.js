@@ -179,12 +179,13 @@ export class StateMachineWidget extends HTMLElement{
     constructor({
         machineName,
         hostedMachines={},
+        isShadow=false
     }={}){
         super();
         this.#machineName=machineName;
         this.#hostedMachines=hostedMachines;
 
-        if(this.hasAttribute("shadow")){
+        if(isShadow || this.hasAttribute("shadow")){
             this.attachShadow({mode: "open"});
             this.#root=this.shadowRoot;
         }else{

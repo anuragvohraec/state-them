@@ -75,9 +75,6 @@ function createStaticIterationList(targetNode){
             if(customElements.get(currentNode.tagName.toLowerCase())){
                 let cn = itr.nextNode();
                 while(currentNode.contains(cn)){
-                    if(cn.tagName==="SLOT"){
-                        result.push(cn);
-                    }
                     cn=itr.nextNode();
                 }
                 currentNode=cn;
@@ -128,9 +125,6 @@ function createNodeListBetween(startCommentNode){
             if(customElements.get(currentNode.tagName.toLowerCase())){
                 let cn = itr.nextNode();
                 while(currentNode.contains(cn)){
-                    if(cn.tagName==="SLOT"){
-                        result.push(cn);
-                    }
                     cn=itr.nextNode();
                 }
                 currentNode=cn;
@@ -198,7 +192,7 @@ export function render(target,templateResult){
 function workOnThisNodes(applicableNodes,values){
     let index=0;
     for(let currentNode of applicableNodes){
-        if(currentNode.nodeType === Node.COMMENT_NODE || currentNode.tagName==="SLOT"){
+        if(currentNode.nodeType === Node.COMMENT_NODE){
             //case of comments nodes
             const pv = currentNode.value;
             const cv = values[index];

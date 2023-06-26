@@ -164,6 +164,10 @@ For action to take place, one must define a function on state machine with the a
 
 # Release Note
 
+## 1.0.5
+1. Bug fix: An item can have a slot only if it has a shadow. There was confusion in code for differentiating between custom elements with children and one without.
+So after this bug fix, a current node children will be skipped if its a custom element and has no shadow.
+
 ## 1.0.4
 1. Default value of for StateMachineWidget constructor. Now no more required to define constructor, if there is no super call.
 2. Added isShadow in `StateMachineWidget` constructor to set default shadow state

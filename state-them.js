@@ -49,12 +49,6 @@ export class StateMachine{
         return this.#machineName;
     }
 
-    /**
-     * 
-     * @param {string} initState: the initial state for this
-     * @param {any} model:
-     * 
-     */
     constructor({model=undefined, initState=undefined,integrateWith={}}){
         if(model){
             this.#model=model;

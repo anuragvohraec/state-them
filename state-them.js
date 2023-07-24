@@ -160,6 +160,9 @@ export class StateMachine{
         // }
     }
 
+    get hostElement(){
+        return this.#hostElement;
+    }
 
 }
 

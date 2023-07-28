@@ -71,7 +71,7 @@ function createStaticIterationList(targetNode){
                     } 
                 }
             }
-            //if its custom element simply skip all its child
+            //if its custom element simply skip all its child:  As custom element is supposed to manage its own states
             if(customElements.get(currentNode.tagName.toLowerCase()) && !currentNode.shadowRoot){
                 let cn = itr.nextNode();
                 while(currentNode.contains(cn)){

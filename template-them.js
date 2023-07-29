@@ -68,6 +68,9 @@ function createStaticIterationList(targetNode){
                     if(currentAttribute.value===ASNT){
                         result.push(currentNode);
                         break;
+                    }else if(currentAttribute.value.match(TSNT)){
+                        result.push(currentNode);
+                        break;
                     } 
                 }
             }
@@ -78,6 +81,17 @@ function createStaticIterationList(targetNode){
                     cn=itr.nextNode();
                 }
                 currentNode=cn;
+            }
+
+            if(currentNode?.tagName==="STYLE"){
+                if(currentNode.textContent.match(TSNT)||currentNode.script){
+                    if(!currentNode.script){
+                        currentNode.script=currentNode.textContent;
+                    }
+                    if(result[result.length-1]!==currentNode){
+                        result.push(currentNode);
+                    }
+                }
             }
         }
         currentNode=itr.nextNode();
@@ -117,6 +131,9 @@ function createNodeListBetween(startCommentNode){
                     if(currentAttribute.value===ASNT){
                         result.push(currentNode);
                         break;
+                    }else if(currentAttribute.value.match(TSNT)){
+                        result.push(currentNode);
+                        break;
                     } 
                 }
             }
@@ -128,6 +145,17 @@ function createNodeListBetween(startCommentNode){
                     cn=itr.nextNode();
                 }
                 currentNode=cn;
+            }
+
+            if(currentNode?.tagName==="STYLE"){
+                if(currentNode.textContent.match(TSNT)||currentNode.script){
+                    if(!currentNode.script){
+                        currentNode.script=currentNode.textContent;
+                    }
+                    if(result[result.length-1]!==currentNode){
+                        result.push(currentNode);
+                    }
+                }
             }
         }
         currentNode = itr.nextNode();
@@ -304,6 +332,9 @@ function workOnThisNodes(applicableNodes,values){
                     if(currentAttribute.value===ASNT){
                         currentNode.stAt[currentAttribute.name]=undefined;
                         t.push(currentAttribute.name);
+                    }else if(currentAttribute.value.match(TSNT)){
+                        currentNode.stAt[currentAttribute.name]=currentAttribute.value;
+                        t.push(currentAttribute.name);
                     }
                 }
                 for(let a of t){
@@ -334,8 +365,21 @@ function workOnThisNodes(applicableNodes,values){
                             currentNode.setAttribute(propertyName,s);
                         }
                     }else{
-                        const s =cv?cv.toString():"";
-                        currentNode.setAttribute(atName,s);
+                        if(pv && pv.match(TSNT)){
+                            let s = ""+pv;
+                            let f = pv.matchAll(TSNT);
+                            for(let t of f){
+                                s=s.replace(TSNT,cv);
+                                index++;
+                                cv=values[index];
+                            }
+                            index--;
+                            cv=pv;
+                            currentNode.setAttribute(atName,s);
+                        }else{
+                            const s =cv?cv.toString():"";
+                            currentNode.setAttribute(atName,s);
+                        }
                     }
 
                     currentNode.stAt[atName]=cv;
@@ -344,6 +388,19 @@ function workOnThisNodes(applicableNodes,values){
                 index++;
             }
 
+            if(currentNode.script){
+                let s = ""+currentNode.script;
+                let f = s.matchAll(TSNT);
+                const before = index;
+                for(let t of f){
+                    let cv = values[index];
+                    s=s.replace(TSNT,cv);
+                    index++;
+                }
+                if(before!==index){
+                    currentNode.textContent=s;
+                }
+            }
         }
     }
 }

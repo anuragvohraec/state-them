@@ -75,13 +75,13 @@ function createStaticIterationList(targetNode){
                 }
             }
             //if its custom element simply skip all its child:  As custom element is supposed to manage its own states
-            if(customElements.get(currentNode.tagName.toLowerCase()) && !currentNode.shadowRoot){
-                let cn = itr.nextNode();
-                while(currentNode.contains(cn)){
-                    cn=itr.nextNode();
-                }
-                currentNode=cn;
-            }
+            // if(customElements.get(currentNode.tagName.toLowerCase()) && !currentNode.shadowRoot){
+            //     let cn = itr.nextNode();
+            //     while(currentNode.contains(cn)){
+            //         cn=itr.nextNode();
+            //     }
+            //     currentNode=cn;
+            // }
 
             if(currentNode?.tagName==="STYLE"){
                 if(currentNode.textContent.match(TSNT)||currentNode.script){
@@ -139,13 +139,13 @@ function createNodeListBetween(startCommentNode){
             }
 
             //if its custom element simply skip all its child
-            if(customElements.get(currentNode.tagName.toLowerCase()) && !currentNode.shadowRoot){
-                let cn = itr.nextNode();
-                while(currentNode.contains(cn)){
-                    cn=itr.nextNode();
-                }
-                currentNode=cn;
-            }
+            // if(customElements.get(currentNode.tagName.toLowerCase()) && !currentNode.shadowRoot){
+            //     let cn = itr.nextNode();
+            //     while(currentNode.contains(cn)){
+            //         cn=itr.nextNode();
+            //     }
+            //     currentNode=cn;
+            // }
 
             if(currentNode?.tagName==="STYLE"){
                 if(currentNode.textContent.match(TSNT)||currentNode.script){
@@ -353,11 +353,25 @@ function workOnThisNodes(applicableNodes,values){
                     if(atName.startsWith(".")){
                         currentNode[propertyName]=cv;
                     }else if(atName.startsWith("@")){
+                        // if(pv){
+                        //     currentNode.removeEventListener(propertyName,pv);
+                        // }
+                        // if(cv){
+                        //     currentNode.addEventListener(propertyName,cv);
+                        // }
                         if(pv){
-                            currentNode.removeEventListener(propertyName,pv);
+                            if(pv instanceof Function){
+                                currentNode.removeEventListener(propertyName,pv);
+                            }else if(pv.handleEvent){
+                                currentNode.removeEventListener(propertyName,pv.handleEvent);
+                            }
                         }
                         if(cv){
-                            currentNode.addEventListener(propertyName,cv);
+                            if(cv instanceof Function){
+                                currentNode.addEventListener(propertyName,cv);
+                            }else if(cv.handleEvent && cv.handleEvent instanceof Function){
+                                currentNode.addEventListener(propertyName,cv.handleEvent,cv.capture);
+                            }
                         }
                     }else if(atName.startsWith("?")){
                         if(cv){
@@ -365,7 +379,7 @@ function workOnThisNodes(applicableNodes,values){
                             currentNode.setAttribute(propertyName,s);
                         }
                     }else{
-                        if(pv && pv.match(TSNT)){
+                        if(pv && pv.match instanceof Function && pv.match(TSNT)){
                             let s = ""+pv;
                             let f = pv.matchAll(TSNT);
                             for(let t of f){
